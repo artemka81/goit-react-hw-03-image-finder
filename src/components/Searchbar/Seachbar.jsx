@@ -1,4 +1,7 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { BiSearch } from 'react-icons/bi';
 import style from './searchbar.module.css';
 
@@ -15,11 +18,16 @@ export default class Searchbar extends Component {
     e.preventDefault();
 
     if (this.state.searchQuery.trim() === '') {
-      alert('Укажите Ваш запрос');
+      toast.info('Укажите Ваш запрос', {
+        theme: 'dark',
+        position: 'top-center',
+        autoClose: 1000,
+        hideProgressBar: true,
+      });
       return;
     }
 
-    this.props.value(this.state.searchQuery);
+    this.props.onSubmit(this.state.searchQuery);
     this.setState({ searchQuery: '' });
   };
 
@@ -46,3 +54,7 @@ export default class Searchbar extends Component {
     );
   }
 }
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
