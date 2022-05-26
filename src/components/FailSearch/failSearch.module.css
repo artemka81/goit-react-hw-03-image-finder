@@ -1,0 +1,19 @@
+.failSearch {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  background: #b7dfff;
+  padding: 2em 0;
+}
+.failSearch img {
+  max-width: 600px;
+  width: 100%;
+}
+.failSearch span {
+  color: tomato;
+}
+.failSearch p {
+  font-size: 24px;
+  font-weight: bold;
+}
