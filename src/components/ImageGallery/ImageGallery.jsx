@@ -1,10 +1,10 @@
 import { Component } from 'react';
 import { fetchPixabay } from '../../services/pixabay-api';
 import ErrorSearch from 'components/ErrorSearch';
-import Skeleton from 'components/Skeleton';
+import { Skeleton } from 'components/Skeleton';
 import ImageGalleryItem from 'components/ImageGalleryItem';
-import style from './imageGallery.module.css';
 import Modal from 'components/Modal';
+import { Button } from 'components/Button';
 
 // import PropTypes from 'prop-types';
 
@@ -21,6 +21,7 @@ export default class ImageGallery extends Component {
     searchQuery: null,
     error: null,
     showModal: false,
+    modalImg: { url: null, alt: null },
   };
   // Делаем запрос по API при обновлении компонента
   componentDidUpdate(prevProps, prevState) {
@@ -39,8 +40,15 @@ export default class ImageGallery extends Component {
         .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
   }
+  // Показываем большую картинку в модальном окне
+  handleImgClick = ({ largeImageURL: url, tags: alt }) => {
+    this.setState({
+      modalImg: { url, alt },
+    });
+    this.toggleModal();
+  };
 
-  // Зарываем модальное окно
+  // Закрывает/открываем модальное окно
   toggleModal = () => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
@@ -48,21 +56,25 @@ export default class ImageGallery extends Component {
   };
 
   render() {
-    const { searchQuery, error, status, showModal } = this.state;
+    const { searchQuery, error, status, showModal, modalImg } = this.state;
 
     return (
       <>
         {status === Status.IDLE && <></>}
+        {status === Status.PENDING && <Skeleton />}
+        {status === Status.RESOLVED && (
+          <>
+            {showModal && (
+              <Modal onClose={this.toggleModal} modalImg={modalImg} />
+            )}
+            <ImageGalleryItem
+              searchQuery={searchQuery.hits}
+              onClick={this.handleImgClick}
+            />
+            <Button />
+          </>
+        )}
         {status === Status.REJECTED && <ErrorSearch message={error.message} />}
-        <ul className={style.imageGallery}>
-          {status === Status.PENDING && <Skeleton />}
-          {status === Status.RESOLVED && (
-            <>
-              {showModal && <Modal onClose={this.toggleModal} />}
-              <ImageGalleryItem searchQuery={searchQuery.hits} />
-            </>
-          )}
-        </ul>
       </>
     );
   }

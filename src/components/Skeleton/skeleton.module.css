@@ -29,9 +29,9 @@
 .animation {
   width: 50%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.5);
   transform: skewX(-15deg);
-  box-shadow: 0 0 30px 30px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 30px 30px rgba(255, 255, 255, 0.2);
 }
 
 @keyframes loading {
