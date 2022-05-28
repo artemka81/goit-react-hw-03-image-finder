@@ -1,11 +1,13 @@
-import FailSearch from 'components/FailSearch';
-import Skeleton from 'components/Skeleton';
 import { Component } from 'react';
-import { ImageGalleryItem } from '../ImageGalleryItem';
+import { fetchPixabay } from '../../services/pixabay-api';
+import ErrorSearch from 'components/ErrorSearch';
+import Skeleton from 'components/Skeleton';
+import ImageGalleryItem from 'components/ImageGalleryItem';
 import style from './imageGallery.module.css';
+import Modal from 'components/Modal';
+
 // import PropTypes from 'prop-types';
-const BASE_URL = 'https://pixabay.com/api/?';
-const KEY = '6444317-c61155bd44e68957af67120b1';
+
 const Status = {
   IDLE: 'idle',
   PENDING: 'pending',
@@ -18,6 +20,7 @@ export default class ImageGallery extends Component {
     status: Status.IDLE,
     searchQuery: null,
     error: null,
+    showModal: false,
   };
   // Делаем запрос по API при обновлении компонента
   componentDidUpdate(prevProps, prevState) {
@@ -25,36 +28,39 @@ export default class ImageGallery extends Component {
     const nextName = this.props.searchQuery;
     if (prevName !== nextName) {
       this.setState({ status: Status.PENDING });
-      setTimeout(() => {
-        fetch(
-          `${BASE_URL}q=${nextName}&page=1&key=${KEY}&image_type=photo&orientation=horizontal&per_page=12`
-        )
-          .then(res => res.json())
-          .then(searchQuery => {
-            if (searchQuery.hits.length === 0) {
-              return Promise.reject(new Error(`${nextName}`));
-            }
-            this.setState({ searchQuery, status: Status.RESOLVED });
-          })
-          .catch(error => this.setState({ error, status: Status.REJECTED }));
-      }, 5000);
+
+      fetchPixabay(nextName)
+        .then(searchQuery => {
+          if (searchQuery.hits.length === 0) {
+            return Promise.reject(new Error(`${nextName}`));
+          }
+          this.setState({ searchQuery, status: Status.RESOLVED });
+        })
+        .catch(error => this.setState({ error, status: Status.REJECTED }));
     }
   }
 
+  // Зарываем модальное окно
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+    }));
+  };
+
   render() {
-    const { searchQuery, error, status } = this.state;
+    const { searchQuery, error, status, showModal } = this.state;
 
     return (
       <>
-        {status === Status.REJECTED && <FailSearch message={error.message} />}
         {status === Status.IDLE && <></>}
+        {status === Status.REJECTED && <ErrorSearch message={error.message} />}
         <ul className={style.imageGallery}>
           {status === Status.PENDING && <Skeleton />}
           {status === Status.RESOLVED && (
-            <ImageGalleryItem
-              src={searchQuery.hits[0].webformatURL}
-              alr={searchQuery.hits[0].tags}
-            />
+            <>
+              {showModal && <Modal onClose={this.toggleModal} />}
+              <ImageGalleryItem searchQuery={searchQuery.hits} />
+            </>
           )}
         </ul>
       </>

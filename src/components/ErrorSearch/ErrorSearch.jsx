@@ -1,7 +1,8 @@
-import style from './failSearch.module.css';
+import style from './errorSearch.module.css';
+import PropTypes from 'prop-types';
 import errorImg from './ErrorImg.png';
 
-const FailSearch = ({ message }) => (
+const ErrorSearch = ({ message }) => (
   <div className={style.failSearch}>
     <p>
       К сожаленью, по запросу <mark>«{message}»</mark> фото не найдено
@@ -10,4 +11,8 @@ const FailSearch = ({ message }) => (
   </div>
 );
 
-export default FailSearch;
+ErrorSearch.propTypes = {
+  message: PropTypes.string.isRequired,
+};
+
+export default ErrorSearch;

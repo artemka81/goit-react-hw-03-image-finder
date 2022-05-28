@@ -1,10 +1,20 @@
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import style from './imageGalleryItem.module.css';
 
-export const ImageGalleryItem = ({ src, alt }) => {
-  return (
-    <li className={style.imageGalleryItem}>
-      <img className={style.imageGalleryItemImage} src={src} alt={alt} />
+const ImageGalleryItem = ({ searchQuery }) => {
+  return searchQuery.map(({ id, webformatURL, tags }) => (
+    <li key={id} className={style.imageGalleryItem}>
+      <img
+        className={style.imageGalleryItemImage}
+        src={webformatURL}
+        alt={tags}
+      />
     </li>
-  );
+  ));
 };
+
+ImageGalleryItem.propType = {
+  searchQuery: PropTypes.array.isRequired,
+};
+
+export default ImageGalleryItem;

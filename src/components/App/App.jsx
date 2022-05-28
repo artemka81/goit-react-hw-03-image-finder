@@ -6,6 +6,7 @@ import ImageGallery from 'components/ImageGallery';
 export default class App extends Component {
   state = {
     searchQuery: '',
+    showModal: true,
   };
 
   handleFormSubmit = searchQuery => {
